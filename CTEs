@@ -1,0 +1,92 @@
+## This SQL query calculates the average amount spent by the top 5 customers, based on their total payment amount. The query uses CTEs to sequentially filter and aggregate data from the database.
+
+WITH
+top_10_countries (country) AS
+(SELECT country.country
+FROM customer 
+JOIN address ON address.address_id = customer.address_id 
+JOIN city ON city.city_id = address.city_id 
+JOIN country ON country.country_id = city.country_id 
+GROUP BY 1
+ORDER BY COUNT(customer_id) DESC 
+LIMIT 10),
+
+top_cities (country,city) AS
+(SELECT country.country,city.city
+FROM customer
+INNER JOIN address ON address.address_id = customer.address_id
+INNER JOIN city ON city.city_id = address.city_id
+INNER JOIN country ON country.country_id = city.country_id
+WHERE country.country IN
+(SELECT country FROM top_10_countries )
+GROUP BY 1,2
+ORDER BY COUNT (customer.customer_id) DESC
+LIMIT 10),
+
+Top_5_customers AS
+(SELECT customer.customer_id, customer.first_name, customer.last_name,country.country,city.city,SUM(amount) AS total_amount_paid
+FROM payment
+INNER JOIN customer ON customer.customer_id = payment.customer_id
+INNER JOIN address ON address.address_id = customer.address_id
+INNER JOIN city ON city.city_id = address.city_id
+INNER JOIN country ON country.country_id = city.country_id
+WHERE (country.country, city.city) IN (SELECT * FROM top_cities)
+GROUP BY 1,2,3,4,5
+ORDER BY total_amount_paid DESC
+LIMIT 5)
+
+SELECT AVG (total_amount_paid) AS average_amount_paid 
+FROM top_5_customers;
+
+
+## This SQL query find out how many of the top 5 customers are based within each country.
+
+WITH
+top_10_countries (country) AS
+(SELECT country.country
+FROM customer 
+JOIN address ON address.address_id = customer.address_id 
+JOIN city ON city.city_id = address.city_id 
+JOIN country ON country.country_id = city.country_id 
+GROUP BY 1
+ORDER BY COUNT(customer_id) DESC 
+LIMIT 10),
+
+top_cities (country,city) AS
+(SELECT country.country,city.city
+FROM customer
+INNER JOIN address ON address.address_id = customer.address_id
+INNER JOIN city ON city.city_id = address.city_id
+INNER JOIN country ON country.country_id = city.country_id
+WHERE country.country IN
+(SELECT country FROM top_10_countries )
+GROUP BY 1,2
+ORDER BY COUNT (customer.customer_id) DESC
+LIMIT 10),
+
+Top_5_customers AS
+(SELECT customer.customer_id, customer.first_name, customer.last_name,country.country,city.city,SUM(amount) AS total_amount_paid
+FROM payment
+INNER JOIN customer ON customer.customer_id = payment.customer_id
+INNER JOIN address ON address.address_id = customer.address_id
+INNER JOIN city ON city.city_id = address.city_id
+INNER JOIN country ON country.country_id = city.country_id
+WHERE (country.country, city.city) IN (SELECT * FROM top_cities)
+GROUP BY 1,2,3,4,5
+ORDER BY total_amount_paid DESC
+LIMIT 5)
+
+SELECT country.country,
+       COUNT (DISTINCT customer.customer_id) AS all_customer_count, 
+       COUNT (DISTINCT top_5_customers.customer_id)AS top_customer_count
+FROM customer
+JOIN address ON customer.address_id = address.address_id
+JOIN city    ON address.city_id = city.city_id
+JOIN country ON city.country_id = country.country_id
+LEFT JOIN top_5_customers ON customer.customer_id = top_5_customers.customer_id
+GROUP BY country.country
+ORDER BY all_customer_count DESC
+LIMIT 6;
+
+
+
