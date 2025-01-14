@@ -9,3 +9,13 @@ The Rockbuster Stealth Management Board has asked a series of business questions
 3. Which countries are Rockbuster customers based in?
 4. Where are customers with a high lifetime value based?
 5. Do sales figures vary between geographic regions?
+## Systems Used
+**pgAdmin4**: For managing PostgreSQL databases.
+**PostgreSQL**: Relational database management system (RDBMS) used to store and query Rockbuster's data.
+**Tableau Public**: Platform for creating and sharing interactive data visualizations.
+## Data Overview
+ The dataset includes information about Rockbuster’s film inventory, customers, payments, stores, staff, films, actors, rental history and addresses.
+## Visualization
+Our movie rental service company currently offer a selection of 1000 films exclusively in the English language, across 17 different categories in 109 country. Take a look at the Tableau Workbooks on Tableau Public :
+[Tableau workbook 1 : (https://public.tableau.com/views/Rockbuster_17330553518060/Map?:language=fr-FR&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)]
+[Tableau workbook 2 : (https://public.tableau.com/views/Rockbuster2_17332579359500/Contibutionbycategory?:language=fr-FR&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)]
